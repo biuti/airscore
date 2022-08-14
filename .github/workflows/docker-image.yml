@@ -30,6 +30,10 @@ jobs:
       - name: Get Current Date 
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d--%M-%S')"
+
       - name: Build Docker Image
-        run: docker build . --file Dockerfile --tag $DOCKERHUB_USERNAME/$REPOSITORY_NAME:$(date +%s)
+        run: docker build . --file Dockerfile --tag $DOCKERHUB_USERNAME/$REPOSITORY_NAME:${{ steps.date.outputs.date }}
+
+      - name: Push Docker Image to Docker Hub
+        run: docker push $DOCKERHUB_USERNAME/$REPOSITORY_NAME:${{ steps.date.outputs.date }}
 
