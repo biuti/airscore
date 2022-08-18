@@ -30,4 +30,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: $DOCKERHUB_USERNAME/${{ env.REPOSITORY_NAME }}:latest , $DOCKERHUB_USERNAME/${{ env.REPOSITORY_NAME }}:${{ github.event.release.tag_name }}
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:latest , ${{ env.DOCKERHUB_USERNAME }}/${{ env.REPOSITORY_NAME }}:${{ github.event.release.tag_name }}
