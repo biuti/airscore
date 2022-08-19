@@ -2,8 +2,8 @@
 ARG INSTALL_PYTHON_VERSION=${INSTALL_PYTHON_VERSION:-3.8}
 FROM python:${INSTALL_PYTHON_VERSION}-slim-buster AS base
 
-RUN apt-get update
-RUN apt-get install -y \
+RUN apt update -y && apt upgrade -y
+RUN apt install -y \
     curl \
     openssh-server \
     gcc \
@@ -11,16 +11,18 @@ RUN apt-get install -y \
 
 RUN service ssh start
 
+# Node JS
 ARG INSTALL_NODE_VERSION=${INSTALL_NODE_VERSION:-12}
 RUN curl -sL https://deb.nodesource.com/setup_${INSTALL_NODE_VERSION}.x | bash -
-RUN apt-get install -y \
-    nodejs \
-    && apt-get -y autoclean
-
-RUN sed -i '/motd/d' /etc/pam.d/sshd
+RUN apt install -y nodejs
 
 # Library needed for shapely python library
-RUN apt-get install -y libgeos-dev
+RUN apt install -y libgeos-dev
+
+# cleanup
+RUN apt --purge autoremove -y && apt clean -y && apt autoclean -y
+
+#RUN sed -i '/motd/d' /etc/pam.d/sshd
 
 WORKDIR /app
 COPY requirements requirements
@@ -32,19 +34,17 @@ RUN chown -R sid:sid /app
 USER sid
 ENV PATH="/home/sid/.local/bin:${PATH}"
 ENV PYTHONPATH="${PYTHONPATH}:/app/airscore/core:/app"
-RUN mkdir /home/sid/.ssh
+#RUN mkdir /home/sid/.ssh
 
 RUN npm install
-
 RUN pip install --upgrade pip
 
 # ================================= PRODUCTION =================================
 FROM base AS production
 RUN pip install --user -r requirements/prod.txt
-#COPY supervisord.conf /etc/supervisor/supervisord.conf
-#COPY supervisord_programs /etc/supervisor/conf.d
 EXPOSE 5000
 EXPOSE 1220
-ENTRYPOINT ["/bin/bash", "shell_scripts/supervisord_entrypoint.sh"]
-#CMD ["-c", "/etc/supervisor/supervisord.conf"]
 
+# run entrypoint script
+COPY shell_scripts/entrypoint.sh /etc/docker-entrypoint.d/entrypoint.sh
+ENTRYPOINT ["/bin/bash", "/etc/docker-entrypoint.d/entrypoint.sh"]
