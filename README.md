@@ -13,6 +13,6 @@ A host volume should be associated to */app* path. A .ssh folder will be created
 
 Public key for ssh access will be created (if not already present) in .ssh/etc folder.
 
-To use Docker Hub image:
+To use Docker Hub image for ssh access:
 
-*docker run biuti/airscore:latest -p 1220:1220 -p 5000:5000 -v \<host volume>:/app*
+*docker run biuti/airscore:latest -p 1220:1220 -v \<host volume>:/app*
