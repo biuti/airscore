@@ -22,4 +22,7 @@ fi
 ### and start sshd
 /usr/sbin/sshd -p1220 -f /app/.ssh/etc/sshd_config -D -e &
 
+### keep container alive
+tail -f /dev/null
+
 exec "$@"
