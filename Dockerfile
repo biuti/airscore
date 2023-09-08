@@ -9,8 +9,6 @@ RUN apt install -y \
     gcc \
     git
 
-RUN service ssh start
-
 # Node JS
 ARG INSTALL_NODE_VERSION=${INSTALL_NODE_VERSION:-12}
 RUN curl -sL https://deb.nodesource.com/setup_${INSTALL_NODE_VERSION}.x | bash -
@@ -22,8 +20,6 @@ RUN apt install -y libgeos-dev
 # cleanup
 RUN apt --purge autoremove -y && apt clean -y && apt autoclean -y
 
-#RUN sed -i '/motd/d' /etc/pam.d/sshd
-
 WORKDIR /app
 COPY requirements requirements
 
@@ -34,7 +30,6 @@ RUN chown -R sid:sid /app
 USER sid
 ENV PATH="/home/sid/.local/bin:${PATH}"
 ENV PYTHONPATH="${PYTHONPATH}:/app/airscore/core:/app"
-#RUN mkdir /home/sid/.ssh
 
 RUN npm install
 RUN pip install --upgrade pip
